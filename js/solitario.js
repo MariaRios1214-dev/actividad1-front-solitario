@@ -118,6 +118,20 @@ function arrancarTiempo(){
     	
 } // arrancarTiempo
 
+function pararTiempo(){  
+  if (temporizador) {
+    clearInterval(temporizador);
+    temporizador = null;
+  }
+}  //Esta función nos ayuda a detener el tiempo, creada el 16/01 por Roos
+
+
+function reiniciarTiempo(){
+  pararTiempo();                 // Llamamos ala función de detener el tiempo en caso de que el cronómetro siga corriendo
+  segundos = 0;                  // Vuelve a 0 el contador interno
+  setContador(contTiempo, "00:00:00"); // Muestra el contador seteado en 0
+}  // Funcion para reiniciar el contador, creada el 16/01 por Roos
+
 
 /**
 	Si mazo es un array de elementos <img>, en esta rutina debe ser
@@ -148,14 +162,16 @@ function cargarTapeteInicial(mazo) {
    	del elemento que actúa de contador
 */
 function incContador(contador){
-	/*** !!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! **/	
+  let v = parseInt(contador.textContent) || 0;
+  contador.textContent = v + 1;
 } // incContador
 
 /**
 	Idem que anterior, pero decrementando 
 */
 function decContador(contador){
-	/*** !!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! ***/	
+  let v = parseInt(contador.textContent) || 0;
+  contador.textContent = Math.max(0, v - 1);	
 } // decContador
 
 /**
@@ -163,5 +179,5 @@ function decContador(contador){
 	valor especificado
 */
 function setContador(contador, valor) {
-	/*** !!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! **/
+	contador.textContent = valor;
 } // setContador
