@@ -6,6 +6,15 @@
 	Completar los estilos que faltan y modificar al gusto del alumno
 **/
 
+.cabecera_container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	min-height: 100px;
+	padding: 20px 0;
+}
+
 /* Todos los contadores estarán ubicados en la parte inferior 
    derecha (position absolute) de los respectivos tapetes (position relative).
 */
@@ -19,6 +28,7 @@
 h1#titulo {
 	text-align: center;
 	color: #E65014;
+	margin: 0 20px;
 }
 
 /* Centrado de los marcadores de tiempo y movimientos */
@@ -97,7 +107,7 @@ div.tapete.receptor{
 	gap: 3vh;
 	text-align: center;
 }
- .menuContenedor img{
+ #LogoMenu{
 	width: 10vw;
 	position: absolute;
 	top: 20%;
@@ -121,4 +131,7 @@ div.tapete.receptor{
 	display: flex;
 	justify-content: space-between;	
 	width: 100%;
+}
+#logoVIU{
+	width: 10vw;
 }

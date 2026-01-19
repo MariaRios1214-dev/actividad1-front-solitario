@@ -15,7 +15,7 @@
 		<section id="mP" class="menuPrincipal">
 			<div class="menuSecundario">
 				<div class="menuContenedor">
-					<img src="/imagenes/logoVIU.png" alt="solitario viu">
+					<img id="LogoMenu" src="/imagenes/logoVIU.png" alt="solitario viu">
 					<h1>Bienvenido al Solitario VIU</h1>
 					<button id="iniciar" class="iniciar">Iniciar</button>
 					<div class="inputsMenu">
@@ -36,12 +36,10 @@
 			</div>
 		</section>
 		<div class="central">
-			<!-- Título principal -->
-
-			<!--/*** !!!!!!!!!!!!!!!!!!! CODIGO !!!!!!!!!!!!!!!!!!!! **/
-			Rellenar h1 e insertar el logo donde proceda
-        	-->
-			<h1 id="titulo"></h1>
+			<div id="cabecera_container" class="cabecera_container">
+				<h1 id="titulo">Juego de Solitario</h1>
+				<img id="logoVIU" src="imagenes/logoVIU.png" alt="Logo VIU">
+			</div>
 			
 			<!-- Siguiente línea donde se indicará el tiempo transcurrido y la cantidad
 				de movimientos que se han hecho hasta el momento. Estos números se 
@@ -67,10 +65,10 @@
 					</div><!--
 					--><div id="sobrantes" class="tapete"><span id="contador_sobrantes" class="contador"></span></div>
 				</div>
-				<div id="receptor1" class="tapete receptor"><span id="contador_receptor1" class="contador"></span></div><!--
-				--><div id="receptor2" class="tapete receptor"><span id="contador_receptor2" class="contador"></span></div><!--
-				--><div id="receptor3" class="tapete receptor"><span id="contador_receptor3" class="contador"></span></div><!--
-				--><div id="receptor4" class="tapete receptor"><span id="contador_receptor4" class="contador"></span></div>			
+				<div id="receptor1" class="tapete receptor"><span id="contador_receptor1" class="contador">0</span></div>
+						<div id="receptor2" class="tapete receptor"><span id="contador_receptor2" class="contador">0</span></div>
+						<div id="receptor3" class="tapete receptor"><span id="contador_receptor3" class="contador">0</span></div>
+						<div id="receptor4" class="tapete receptor"><span id="contador_receptor4" class="contador">0</span></div>			
 			</div>	
 
 			<!-- Botón de reset que reinicia todo: partida, contadores de tiempo, de movimientos, ... -->
