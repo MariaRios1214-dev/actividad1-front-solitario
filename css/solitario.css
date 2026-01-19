@@ -15,7 +15,6 @@
 	right: 3px;
 }
 
-
 /* Centrado del título y color */
 h1#titulo {
 	text-align: center;
@@ -63,4 +62,63 @@ div.tapete#sobrantes{
 /* Color de fondo de los tapetes receptores */
 div.tapete.receptor{
 	background-color: lightgreen;
+}
+
+.mazoInicial{
+	width: 40%;
+}
+.menuPrincipal{
+	top: 0%;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(99, 99, 99, 0.699);
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 10;
+}
+.menuSecundario{
+	height: 60%;
+	width: 30%;
+	background-color: white;
+	border-radius: 2em;
+	box-shadow: 1px 1px 1px black;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+.menuContenedor{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 3vh;
+	text-align: center;
+}
+ .menuContenedor img{
+	width: 10vw;
+	position: absolute;
+	top: 20%;
+	left: 35%;
+ }
+#iniciar{
+	border: none;
+	height: 6vh;
+	width: 12vw;
+	border-radius: 0.75em;
+	color: white;
+	background-color: green;
+}
+.inputsMenu{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;	
+}
+.textoMS{
+	display: flex;
+	justify-content: space-between;	
+	width: 100%;
 }
