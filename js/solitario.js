@@ -168,15 +168,14 @@ function pararTiempo(){
     clearInterval(temporizador);
     temporizador = null;
   }
-}  //Esta función nos ayuda a detener el tiempo, creada el 16/01 por Roos
+}  //Esta función nos ayuda a detener el tiempo
 
 
 function reiniciarTiempo(){
   pararTiempo();                 // Llamamos ala función de detener el tiempo en caso de que el cronómetro siga corriendo
   segundos = 0;                  // Vuelve a 0 el contador interno
   setContador(contTiempo, "00:00:00"); // Muestra el contador seteado en 0
-}  // Funcion para reiniciar el contador, creada el 16/01 por Roos
-
+}  // Funcion para reiniciar el contador
 
 /**
 	Si mazo es un array de elementos <img>, en esta rutina debe ser
@@ -218,7 +217,11 @@ function cargarTapeteInicial(mazo) {
     mazo.forEach((carta, indice) => {
         let img = document.createElement('img');
         img.src = `imagenes/baraja/${carta[0]}.png`; // carta[0] es la clave del Map
-		img.attributes.draggable = true;
+		const [numStr, palo, colorCorto] = carta[0].split("-"); // ej: "12", "viu", "r/n"
+		img.dataset.numero = numStr;
+		img.dataset.palo = palo;
+		img.dataset.color = (colorCorto === "r") ? "rojo" : "negro";
+		img.draggable = true;
         img.style.width = '100px';
         img.style.position = 'absolute';
         img.style.top = (indice * paso) + 'px';
@@ -272,3 +275,58 @@ function decContador(contador){
 function setContador(contador, valor) {
 	contador.textContent = valor;
 } // setContador
+
+
+function cartaSuperior(tapete){
+	const cartas = tapete.querySelectorAll("img");
+	return cartas.length ? cartas[cartas.length - 1]: null;
+} // Busca todas las cartas dentro del receptor y devuelve la ultima y si encuentra que está vacío devuelve un null
+
+function numeroDe(cartaImg){
+	return parseInt(cartaImg.dataset.numero, 10);
+} //Con esta función leemos el número de la carta
+
+function colorDe(cartaimg){
+	return cartaImg.dataset.color; 
+} //Esta función devuelve el color de la carta.
+
+function puedeColocarEnReceptor(cartaImg, tapeteReceptor){
+	const top = cartaSuperior(tapeteReceptor);
+	const num = numeroDe(cartaImg);
+
+	if (!top) return num === 12; //Si el receptor está vacío, solo se permite el 12
+
+	//Si hay carta arriba: debe ser decreciente y alternar color
+	const topNum = numeroDe(top);
+	const topColor = colorDe(top);
+
+	const esDecreciente = num === topNum - 1;
+	const alternaColor = colorDe(cartaImg) !== topColor;
+
+	return esDecreciente && alternaColor;
+} //Función de validación del receptor
+
+function depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen) {
+  // Mover en el DOM
+	tapeteReceptor.appendChild(cartaImg);
+
+  // Ajustar posición para que quede apilada
+	const n = tapeteReceptor.querySelectorAll("img").length - 1; // index de la carta recién puesta
+	cartaImg.style.position = "absolute";
+	cartaImg.style.top = (n * paso) + "px";
+	cartaImg.style.left = (n * paso) + "px";
+
+  // Contadores
+	incContador(contReceptor);       // suma 1 en el receptor
+	incContador(contMovimientos);    // suma 1 movimiento
+	if (contOrigen) decContador(contOrigen); // resta 1 del origen (inicial o sobrantes)
+} //Funcion para depositor en un mazo receptor
+
+function intentarEnviarAReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen) {
+	if (puedeColocarEnReceptor(cartaImg, tapeteReceptor)) {
+		depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen);
+		return true;
+	}
+	return false;
+}  // Une la validación mas el deposito de las cartas
+
