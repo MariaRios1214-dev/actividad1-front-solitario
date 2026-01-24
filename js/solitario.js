@@ -123,8 +123,9 @@ function configurarEventosDragDrop() {
 };
 
 function reiniciarContadores() {
+	
 	// Limpiar todos los receptores preservando sus contadores
-	[tapeteReceptor1, tapeteReceptor2, tapeteReceptor3, tapeteReceptor4, tapeteSobrantes].forEach(receptor => {
+	[tapeteReceptor1, tapeteReceptor2, tapeteReceptor3, tapeteReceptor4, tapeteSobrantes, tapeteInicial].forEach(receptor => {
 		const contador = receptor.querySelector('.contador');
 		receptor.innerHTML = '';
 		if (contador) {
@@ -133,12 +134,15 @@ function reiniciarContadores() {
 	});
 	
 	// Vaciar arrays de mazos
+	mazoInicial = [];
 	mazoSobrantes = [];
 	mazoReceptor1 = [];
 	mazoReceptor2 = [];
 	mazoReceptor3 = [];
 	mazoReceptor4 = [];
+	
 	// Poner contadores a cero
+	setContador(contInicial, 0);
 	setContador(contSobrantes, 0);
 	setContador(contReceptor1, 0);
 	setContador(contReceptor2, 0);
@@ -167,12 +171,13 @@ function comenzarJuego() {
 	mazoInicial = [...combinaciones];
 	const cartasBarajadas = barajarMazo(mazoInicial);
 	document.getElementById("mP").style.display = "none";
-	cargarTapeteInicial(cartasBarajadas);
-
-	configurarEventosDragDrop();
-
-	// Puesta a cero de contadores de mazos
+	
+	// Puesta a cero de contadores ANTES de cargar
 	reiniciarContadores();
+	
+	cargarTapeteInicial(cartasBarajadas);
+	configurarEventosDragDrop();
+	
 	// Arrancar el conteo de tiempo
 	arrancarTiempo();
 
@@ -262,9 +267,6 @@ document.getElementById("iniciar").addEventListener("click", comenzarJuego);
 document.getElementById("reset").addEventListener("click", () => {
 	pararTiempo();
 	reiniciarTiempo();
-	tapeteInicial.innerHTML = '';
-	mazoInicial = [];
-	cargarTapeteInicial(mazoInicial);
 	reiniciarContadores();
 	// Mostrar el menú principal nuevamente
 	document.getElementById("mP").style.display = "flex";
@@ -277,15 +279,6 @@ document.getElementById("reset").addEventListener("click", () => {
 	Al final se debe ajustar el contador de cartas a la cantidad oportuna
 */
 function cargarTapeteInicial(mazo) {
-	// Guardar el contador antes de limpiar
-	const contador = tapeteInicial.querySelector('.contador');
-	// Limpiar el tapete antes
-	tapeteInicial.innerHTML = '';
-	// Restaurar el contador
-	if (contador) {
-		tapeteInicial.appendChild(contador);
-	}
-
 	// Recorrer todas las cartas del mazo
 	mazo.forEach((carta, indice) => {
 		let img = document.createElement('img');
