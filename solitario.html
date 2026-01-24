@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 
 <html>
+
 <head>
 	<title>Solitario VIU</title>
 	<meta charset="utf-8">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-		crossorigin="anonymous">
-	</script>
+		integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+		</script>
 	<link rel="stylesheet" href="css/solitario.css">
 	<script defer src="js/solitario.js"></script>
 
@@ -17,14 +17,16 @@
 
 <body>
 	<section id="mP" class="menuPrincipal">
-		<div class="menuSecundario">
-			<div class="menuContenedor">
-				<img id="LogoMenu" src="/imagenes/logoVIU.png" alt="solitario viu">
-				<h1>Bienvenido al Solitario VIU</h1>
-				<button id="iniciar" class="iniciar">Iniciar</button>
-				<div class="inputsMenu">
-					<div class="textoMS">
-						<label for="valorInicial">Valor inicial de las cartas: </label>
+		<div class="menuContenedor">
+			<div id="cabecera_container" class="cabecera_container">
+				<h5 id="titulo">Bienvenido al Juego de Solitario</h5>
+				<img id="logoVIU" src="imagenes/logoVIU.png" alt="Logo VIU">
+			</div>
+			<button id="iniciar" class="iniciar">Iniciar</button>
+			<h6 class="textoInstruccion">Selecciona el mazo con el que quieres jugar</h6>
+			<div class="inputsMenu">
+				<div class="textoMS">
+					<label for="valorInicial">Valor inicial de las cartas: </label>
 					<p id="valorInicialTexto"></p>
 				</div>
 				<input id="valorInicial" type="range" min="1" max="12" value="1">
@@ -33,7 +35,6 @@
 					<p id="valorFinalTexto"></p>
 				</div>
 				<input id="valorFinal" type="range" min="1" max="12" value="12">
-				</div>
 			</div>
 		</div>
 	</section>
@@ -73,6 +74,6 @@
 
 		<!-- Botón de reset que reinicia todo: partida, contadores de tiempo, de movimientos, ... -->
 		<button id="reset" class="btn btn-danger">Reiniciar</button>
-	</div> <!-- class="central" -->
+	</div>
 </body>
 </html>

@@ -122,6 +122,31 @@ function configurarReceptores() {
 	})
 };
 
+function reiniciarContadores() {
+	// Limpiar todos los receptores preservando sus contadores
+	[tapeteReceptor1, tapeteReceptor2, tapeteReceptor3, tapeteReceptor4, tapeteSobrantes].forEach(receptor => {
+		const contador = receptor.querySelector('.contador');
+		receptor.innerHTML = '';
+		if (contador) {
+			receptor.appendChild(contador);
+		}
+	});
+	
+	// Vaciar arrays de mazos
+	mazoSobrantes = [];
+	mazoReceptor1 = [];
+	mazoReceptor2 = [];
+	mazoReceptor3 = [];
+	mazoReceptor4 = [];
+	// Poner contadores a cero
+	setContador(contSobrantes, 0);
+	setContador(contReceptor1, 0);
+	setContador(contReceptor2, 0);
+	setContador(contReceptor3, 0);
+	setContador(contReceptor4, 0);
+	setContador(contMovimientos, 0);
+}
+
 // Desarrollo del comienzo de juego
 function comenzarJuego() {
 	// Barajar y dejar mazoInicial en tapete inicial
@@ -147,13 +172,7 @@ function comenzarJuego() {
 	configurarReceptores();
 
 	// Puesta a cero de contadores de mazos
-	setContador(contSobrantes, 0);
-	setContador(contReceptor1, 0);
-	setContador(contReceptor2, 0);
-	setContador(contReceptor3, 0);
-	setContador(contReceptor4, 0);
-	setContador(contMovimientos, 0);
-
+	reiniciarContadores();
 	// Arrancar el conteo de tiempo
 	arrancarTiempo();
 
@@ -240,6 +259,16 @@ function reiniciarTiempo() {
 
 document.getElementById("iniciar").addEventListener("click", comenzarJuego);
 
+document.getElementById("reset").addEventListener("click", () => {
+	pararTiempo();
+	reiniciarTiempo();
+	tapeteInicial.innerHTML = '';
+	mazoInicial = [];
+	cargarTapeteInicial(mazoInicial);
+	reiniciarContadores();
+	// Mostrar el menú principal nuevamente
+	document.getElementById("mP").style.display = "flex";
+});
 /**
 	  En el elemento HTML que representa el tapete inicial (variable tapeteInicial)
 	se deben añadir como hijos todos los elementos <img> del array mazo.
@@ -262,7 +291,7 @@ function cargarTapeteInicial(mazo) {
 		let img = document.createElement('img');
 		img.src = `imagenes/baraja/${carta[0]}.png`; // carta[0] es la clave del Map
 		const [numStr, palo, colorCorto] = carta[0].split("-"); // ej: "12", "viu", "r/n"
-		  // Guardar metadatos de la carta en el dataset para lógica del juego
+		// Guardar metadatos de la carta en el dataset para lógica del juego
 		img.dataset.numero = numStr;
 		img.dataset.palo = palo;
 		img.dataset.color = (colorCorto === "r") ? "rojo" : "negro";
@@ -362,7 +391,7 @@ function depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen)
 	incContador(contReceptor);       // suma 1 en el receptor
 	incContador(contMovimientos);    // suma 1 movimiento
 	decContador(contOrigen); // resta 1 del origen (inicial o sobrantes)
-	
+
 	// Verificar si necesitamos recargar el mazo inicial después de mover al receptor
 	verificarRecargaMazoInicial();
 } //Funcion para depositor en un mazo receptor
@@ -370,12 +399,12 @@ function depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen)
 function moverASobrantes(cartaImg) {
 	const cartaId = cartaImg.src.split('/').pop().replace('.png', '');
 	mazoSobrantes.push([cartaId, cartaImg.dataset.color]);
-	
+
 	// Decrementar el contador de origen antes de mover
 	if (cartaImg.dataset.origen === 'inicial') {
 		decContador(contInicial);
 	}
-	
+
 	// Se agrega la carta al tapete de sobrantes en el DOM
 	tapeteSobrantes.appendChild(cartaImg);
 	cartaImg.dataset.origen = 'sobrantes'; // Marcar que ahora está en sobrantes
@@ -385,7 +414,7 @@ function moverASobrantes(cartaImg) {
 	cartaImg.style.left = (indice * paso) + 'px';
 
 	incContador(contSobrantes);
-	
+
 	// Verificar si necesitamos recargar el mazo inicial
 	verificarRecargaMazoInicial();
 }
@@ -393,25 +422,25 @@ function moverASobrantes(cartaImg) {
 function verificarRecargaMazoInicial() {
 	console.log("Texto del contador inicial:", contInicial.textContent);
 	console.log("Texto del contador sobrantes:", contSobrantes.textContent);
-	
+
 	const valueContInicial = parseInt(contInicial.textContent, 10);
 	const valueContSobrantes = parseInt(contSobrantes.textContent, 10);
-	
+
 	console.log("Valor parseado del contador inicial:", valueContInicial);
 	console.log("Valor parseado del contador sobrantes:", valueContSobrantes);
 	console.log("Cartas reales en tapete inicial:", tapeteInicial.querySelectorAll("img").length);
 	console.log("Cartas reales en tapete sobrantes:", tapeteSobrantes.querySelectorAll("img").length);
 	console.log("Condición se cumple (inicial==0 && sobrantes>0):", valueContInicial == 0 && valueContSobrantes > 0);
 
-	if(valueContInicial == 0 && valueContSobrantes > 0){
+	if (valueContInicial == 0 && valueContSobrantes > 0) {
 		console.log(" SE EJECUTA LA RECARGA");
 		// Si el mazo inicial está vacío y hay cartas en sobrantes, mover todas las cartas de sobrantes al inicial
 		const cartasSobrantes = tapeteSobrantes.querySelectorAll("img");
-		
+
 		// Guardar el contador de sobrantes antes de limpiar
 		const contadorSobrantes = tapeteSobrantes.querySelector('.contador');
 		const contadorInicial = tapeteInicial.querySelector('.contador');
-		
+
 		cartasSobrantes.forEach(carta => {
 			// Mover en el DOM
 			tapeteInicial.appendChild(carta);
@@ -423,13 +452,13 @@ function verificarRecargaMazoInicial() {
 			carta.style.top = (n * paso) + "px";
 			carta.style.left = (n * paso) + "px";
 		});
-		
+
 		// Limpiar el tapete de sobrantes pero preservar el contador
 		tapeteSobrantes.innerHTML = '';
 		if (contadorSobrantes) {
 			tapeteSobrantes.appendChild(contadorSobrantes);
 		}
-		
+
 		// Actualizar contadores
 		setContador(contInicial, cartasSobrantes.length);
 		setContador(contSobrantes, 0);

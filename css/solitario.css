@@ -36,6 +36,13 @@ h1#titulo {
 	margin: 0 20px;
 }
 
+h5#titulo {
+	text-align: center;
+	color: #E65014;
+	margin: 0 20px;
+}
+
+
 /* Centrado de los marcadores de tiempo y movimientos */
 h2#marcadores {
 	text-align: center;
@@ -97,18 +104,6 @@ div.tapete.receptor {
 	z-index: 10;
 }
 
-.menuSecundario {
-	height: 60%;
-	width: 30%;
-	background-color: white;
-	border-radius: 2em;
-	box-shadow: 1px 1px 1px black;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-
 .menuContenedor {
 	display: flex;
 	flex-direction: column;
@@ -116,6 +111,22 @@ div.tapete.receptor {
 	align-items: center;
 	gap: 3vh;
 	text-align: center;
+	height: 65%;
+	width: 30%;
+	background-color: white;
+	border-radius: 2em;
+	box-shadow: 1px 1px 1px black;
+	padding: 20px;
+}
+
+.menuContenedor .cabecera_container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 15px;
+	min-height: auto;
+	padding: 0;
 }
 
 #LogoMenu {
@@ -144,7 +155,23 @@ div.tapete.receptor {
 .textoMS {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	width: 100%;
+	padding: 8px 12px;
+	font-size: 0.95rem;
+	font-weight: 500;
+	color: #333;
+	margin-bottom: 8px;
+}
+
+.textoMS label {
+	color: #555;
+}
+
+.textoMS p {
+	font-weight: bold;
+	color: #E65014;
+	margin: 0;
 }
 
 #logoVIU {
