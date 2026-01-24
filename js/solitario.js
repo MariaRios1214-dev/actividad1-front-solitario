@@ -55,7 +55,7 @@ function validarRango(valorInicial, valorFinal) {
 
 function crearRangoNumeros(valorInicial, valorFinal) {
 	const numeros = [];
-	for(let i = valorInicial; i <= valorFinal; i++) {
+	for (let i = valorInicial; i <= valorFinal; i++) {
 		numeros.push(i);
 	}
 	return numeros;
@@ -63,17 +63,17 @@ function crearRangoNumeros(valorInicial, valorFinal) {
 
 function generarCombinaciones(numerosCartas, palos) {
 	const combinaciones = new Map();
-	
+	// Se separan palos por color para alternarlos
 	const palosRojos = palos.filter(p => PALOS[p].color === 'rojo');
 	const palosNegros = palos.filter(p => PALOS[p].color === 'negro');
-	
+
 	// Se alternan los colores de las cartas
 	const palosAlternados = [];
 	for (let i = 0; i < Math.max(palosRojos.length, palosNegros.length); i++) {
 		if (palosRojos[i]) palosAlternados.push(palosRojos[i]);
 		if (palosNegros[i]) palosAlternados.push(palosNegros[i]);
 	}
-	
+
 	// se generan todas las combinaciones con palos ya alternados por color
 	for (const numero of numerosCartas) {
 		for (const palo of palosAlternados) {
@@ -83,12 +83,12 @@ function generarCombinaciones(numerosCartas, palos) {
 			combinaciones.set(claveCarta, infoPalo.color);
 		}
 	}
-	
+
 	return combinaciones;
 }
 
 function barajarMazo(mazo) {
-	// Toma un mazo que YA EXISTE
+	// Toma un mazo que ya este creado segun la seleccion
 	// Lo desordena aleatoriamente
 	// Devuelve el mazo desordenado
 	const copiaMazo = [...mazo]
@@ -102,6 +102,27 @@ function barajarMazo(mazo) {
 	return mazoBarajado;
 }
 
+function configurarReceptores() {
+	[tapeteReceptor1, tapeteReceptor2, tapeteReceptor3, tapeteReceptor4].forEach((tapeteReceptor, index) => {
+		const contadores = [contReceptor1, contReceptor2, contReceptor3, contReceptor4];
+
+		tapeteReceptor.addEventListener('dragover', (e) => {
+			e.preventDefault(); // Permite  que el elemento pueda soltarse encima del destino
+			e.dataTransfer.dropEffect = 'move'; // Indica que el tipo de movimiento es un movimiento
+		})
+		tapeteReceptor.addEventListener('drop', (e) => {
+			e.preventDefault(); // Permite dejarlo caer sobre un lugar válido
+			const cartaId = e.dataTransfer.getData('cartaId');
+			console.log("Drop en receptor ", index, " de carta:", cartaId);
+			const cartaImg = document.querySelector(`img[src="imagenes/baraja/${cartaId}.png"]`);
+
+			if (cartaImg) {
+				console.log("Intentando enviar carta al receptor ", index);
+				intentarEnviarAReceptor(cartaImg, tapeteReceptor, contadores[index], contInicial);
+			}
+		})
+	})
+};
 
 // Desarrollo del comienzo de juego
 function comenzarJuego() {
@@ -125,6 +146,8 @@ function comenzarJuego() {
 	console.log("Cartas barajadas:", cartasBarajadas);
 	document.getElementById("mP").style.display = "none";
 	cargarTapeteInicial(cartasBarajadas);
+
+	configurarReceptores();
 
 	// Puesta a cero de contadores de mazos
 	setContador(contSobrantes, 0);
@@ -237,6 +260,7 @@ function cargarTapeteInicial(mazo) {
 		let img = document.createElement('img');
 		img.src = `imagenes/baraja/${carta[0]}.png`; // carta[0] es la clave del Map
 		const [numStr, palo, colorCorto] = carta[0].split("-"); // ej: "12", "viu", "r/n"
+		  // Guardar metadatos de la carta en el dataset para lógica del juego
 		img.dataset.numero = numStr;
 		img.dataset.palo = palo;
 		img.dataset.color = (colorCorto === "r") ? "rojo" : "negro";
@@ -247,6 +271,21 @@ function cargarTapeteInicial(mazo) {
 		img.style.left = (indice * paso) + 'px';
 		img.dataset.indice = indice;
 
+		// Evento dragstart: inicia el arrastre de la carta
+		img.addEventListener('dragstart', (e) => {
+			console.log("Drag start de carta:", e.target);
+			console.log("Iniciando drag de carta:", carta[0]);
+			e.dataTransfer.setData('cartaId', carta[0]);
+			e.dataTransfer.effectAllowed = 'move'; //Indica que la carta se mueve, no se copia
+			console.log("Arrastrando carta:", carta[0]);
+			img.style.opacity = '0.5';
+		});
+		// Evento dragend: finaliza el arrastre de la carta y cambia la opacidad de nuevo
+		img.addEventListener('dragend', () => {
+			img.style.opacity = '1';
+		});
+
+		//agregar la carta al tapete inicial
 		tapeteInicial.appendChild(img);
 	});
 
@@ -282,21 +321,22 @@ function setContador(contador, valor) {
 
 function cartaSuperior(tapete) {
 	const cartas = tapete.querySelectorAll("img");
+	console.log("cartas en tapete:", cartas, cartas.length);
 	return cartas.length ? cartas[cartas.length - 1] : null;
 } // Busca todas las cartas dentro del receptor y devuelve la ultima y si encuentra que está vacío devuelve un null
 
 function numeroDe(cartaImg) {
 	return parseInt(cartaImg.dataset.numero, 10);
-} //Con esta función leemos el número de la carta
+} //Con esta función leemos el número de la carta en formato entero
 
-function colorDe(cartaimg) {
+function colorDe(cartaImg) {
 	return cartaImg.dataset.color;
 } //Esta función devuelve el color de la carta.
 
 function puedeColocarEnReceptor(cartaImg, tapeteReceptor) {
 	const top = cartaSuperior(tapeteReceptor);
 	const num = numeroDe(cartaImg);
-
+	console.log("Validando colocación de carta", cartaImg.dataset.numero, "en receptor con cima", top ? top.dataset.numero : "vacío");
 	if (!top) return num === 12; //Si el receptor está vacío, solo se permite el 12
 
 	//Si hay carta arriba: debe ser decreciente y alternar color
@@ -305,6 +345,8 @@ function puedeColocarEnReceptor(cartaImg, tapeteReceptor) {
 
 	const esDecreciente = num === topNum - 1;
 	const alternaColor = colorDe(cartaImg) !== topColor;
+
+	console.log("esDecreciente:", esDecreciente, "alternaColor:", alternaColor, "topColor:", topColor);
 
 	return esDecreciente && alternaColor;
 } //Función de validación del receptor
@@ -325,11 +367,29 @@ function depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen)
 	if (contOrigen) decContador(contOrigen); // resta 1 del origen (inicial o sobrantes)
 } //Funcion para depositor en un mazo receptor
 
+function moverASobrantes(cartaImg) {
+	const cartaId = cartaImg.src.split('/').pop().replace('.png', '');
+	mazoSobrantes.push([cartaId, cartaImg.dataset.color]);
+	console.log("Mazo sobrantes tras añadir carta:", mazoSobrantes);
+	// Se agrega la carta al tapete de sobrantes en el DOM
+	tapeteSobrantes.appendChild(cartaImg);
+
+	const indice = tapeteSobrantes.querySelectorAll('img').length - 1;
+	console.log("Moviendo carta a sobrantes, nuevo índice:", indice);
+	console.log("movimiento en px:", "-- indice", indice, "---calculo de ubicacion", indice * paso);
+	cartaImg.style.top = (indice * paso) + 'px';
+	cartaImg.style.left = (indice * paso) + 'px';
+
+	incContador(contSobrantes);
+}
+
 function intentarEnviarAReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen) {
 	if (puedeColocarEnReceptor(cartaImg, tapeteReceptor)) {
 		depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen);
 		return true;
 	}
+	moverASobrantes(cartaImg);
 	return false;
 }  // Une la validación mas el deposito de las cartas
+
 
