@@ -100,7 +100,7 @@ function barajarMazo(mazo) {
 	return mazoBarajado;
 }
 
-function configurarReceptores() {
+function configurarEventosDragDrop() {
 	[tapeteReceptor1, tapeteReceptor2, tapeteReceptor3, tapeteReceptor4].forEach((tapeteReceptor, index) => {
 		const contadores = [contReceptor1, contReceptor2, contReceptor3, contReceptor4];
 
@@ -169,7 +169,7 @@ function comenzarJuego() {
 	document.getElementById("mP").style.display = "none";
 	cargarTapeteInicial(cartasBarajadas);
 
-	configurarReceptores();
+	configurarEventosDragDrop();
 
 	// Puesta a cero de contadores de mazos
 	reiniciarContadores();
@@ -420,20 +420,10 @@ function moverASobrantes(cartaImg) {
 }
 
 function verificarRecargaMazoInicial() {
-	console.log("Texto del contador inicial:", contInicial.textContent);
-	console.log("Texto del contador sobrantes:", contSobrantes.textContent);
-
 	const valueContInicial = parseInt(contInicial.textContent, 10);
 	const valueContSobrantes = parseInt(contSobrantes.textContent, 10);
 
-	console.log("Valor parseado del contador inicial:", valueContInicial);
-	console.log("Valor parseado del contador sobrantes:", valueContSobrantes);
-	console.log("Cartas reales en tapete inicial:", tapeteInicial.querySelectorAll("img").length);
-	console.log("Cartas reales en tapete sobrantes:", tapeteSobrantes.querySelectorAll("img").length);
-	console.log("Condición se cumple (inicial==0 && sobrantes>0):", valueContInicial == 0 && valueContSobrantes > 0);
-
 	if (valueContInicial == 0 && valueContSobrantes > 0) {
-		console.log(" SE EJECUTA LA RECARGA");
 		// Si el mazo inicial está vacío y hay cartas en sobrantes, mover todas las cartas de sobrantes al inicial
 		const cartasSobrantes = tapeteSobrantes.querySelectorAll("img");
 
@@ -462,8 +452,6 @@ function verificarRecargaMazoInicial() {
 		// Actualizar contadores
 		setContador(contInicial, cartasSobrantes.length);
 		setContador(contSobrantes, 0);
-	} else {
-		console.log(" NO SE EJECUTA LA RECARGA (condición no cumplida)");
 	}
 }
 
