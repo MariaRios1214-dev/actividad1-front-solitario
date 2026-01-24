@@ -1,78 +1,79 @@
 <!DOCTYPE html>
 
 <html>
-	<head>
-		<title>Solitario VIU</title>
-        <meta charset="utf-8">        
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-		<link rel="stylesheet" href="css/solitario.css">
-		<script defer src="js/solitario.js"></script>
 
-	</head>
+<head>
+	<title>Solitario VIU</title>
+	<meta charset="utf-8">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+		</script>
+	<link rel="stylesheet" href="css/solitario.css">
+	<script defer src="js/solitario.js"></script>
 
-    <body>
-		<section id="mP" class="menuPrincipal">
-			<div class="menuSecundario">
-				<div class="menuContenedor">
-					<img id="LogoMenu" src="/imagenes/logoVIU.png" alt="solitario viu">
-					<h1>Bienvenido al Solitario VIU</h1>
-					<button id="iniciar" class="iniciar">Iniciar</button>
-					<div class="inputsMenu">
-						<div class="textoMS">
-							<label for="valorInicial">Valor inicial de las cartas: </label>
-							<p id="valorInicialtexto">12</p>
-						</div>
-						<input id="valorInicial" type="range" min="1" max="12" value="5">
-						<div class="textoMS">
-							<label for="ultimoValor">Valor final de las cartas: </label>
-							<p id="ultimoValortexto">12</p>
-						</div>
-						<input id="ultimoValor" type="range" min="1" max="12" value="3">
-					</div>
+</head>
 
-				</div>
-
-			</div>
-		</section>
-		<div class="central">
+<body>
+	<section id="mP" class="menuPrincipal">
+		<div class="menuContenedor">
 			<div id="cabecera_container" class="cabecera_container">
-				<h1 id="titulo">Juego de Solitario</h1>
+				<h5 id="titulo">Bienvenido al Juego de Solitario</h5>
 				<img id="logoVIU" src="imagenes/logoVIU.png" alt="Logo VIU">
 			</div>
-			
-			<!-- Siguiente línea donde se indicará el tiempo transcurrido y la cantidad
+			<button id="iniciar" class="iniciar">Iniciar</button>
+			<h6 class="textoInstruccion">Selecciona el mazo con el que quieres jugar</h6>
+			<div class="inputsMenu">
+				<div class="textoMS">
+					<label for="valorInicial">Valor inicial de las cartas: </label>
+					<p id="valorInicialTexto"></p>
+				</div>
+				<input id="valorInicial" type="range" min="1" max="12" value="1">
+				<div class="textoMS">
+					<label for="valorFinal">Valor final de las cartas: </label>
+					<p id="valorFinalTexto"></p>
+				</div>
+				<input id="valorFinal" type="range" min="1" max="12" value="12">
+			</div>
+		</div>
+	</section>
+	<div class="central">
+		<div id="cabecera_container" class="cabecera_container">
+			<h1 id="titulo">Juego de Solitario</h1>
+			<img id="logoVIU" src="imagenes/logoVIU.png" alt="Logo VIU">
+		</div>
+
+		<!-- Siguiente línea donde se indicará el tiempo transcurrido y la cantidad
 				de movimientos que se han hecho hasta el momento. Estos números se 
 				indicarán en los span internos -->
-			<h2 id="marcadores">
-				<span>Tiempo: <span id="contador_tiempo"></span></span>
-				<span style="display:inline-block; width:200px"></span>
-				<span>Movimientos: <span id="contador_movimientos" class=""></span></span>
-			</h2>
+		<h2 id="marcadores">
+			<span>Tiempo: <span id="contador_tiempo"></span></span>
+			<span style="display:inline-block; width:200px"></span>
+			<span>Movimientos: <span id="contador_movimientos" class=""></span></span>
+		</h2>
 
-			<!-- La "mesa" contendrá los 6 tapetes. En la parte superior dos de ellos 
+		<!-- La "mesa" contendrá los 6 tapetes. En la parte superior dos de ellos 
 				y en la parte inferior los cuatro restantes. Los contadores de los
 				mazos de cartas de cada tapete están indicados oportunamente dentro
 				de elementos span -->
-			<div id="mesa">
-				<div class="tapetes_superiores">
-					<div id="inicial" class="tapete">
-						<span id="contador_inicial" class="contador">
-							este es el tapete inicial
-							Aqui deben ir las cartas 
-							<!-- <img class="mazoInicial" src="/imagenes/baraja/12-viu.png" alt="cartas"> -->
-						</span>
-					</div><!--
-					--><div id="sobrantes" class="tapete"><span id="contador_sobrantes" class="contador"></span></div>
+		<div id="mesa">
+			<div class="tapetes_superiores">
+				<div id="inicial" class="tapete">
+					<span id="contador_inicial" class="contador">0</span>
 				</div>
-				<div id="receptor1" class="tapete receptor"><span id="contador_receptor1" class="contador">0</span></div>
-						<div id="receptor2" class="tapete receptor"><span id="contador_receptor2" class="contador">0</span></div>
-						<div id="receptor3" class="tapete receptor"><span id="contador_receptor3" class="contador">0</span></div>
-						<div id="receptor4" class="tapete receptor"><span id="contador_receptor4" class="contador">0</span></div>			
-			</div>	
+				<div id="sobrantes" class="tapete">
+					<span id="contador_sobrantes" class="contador">0</span>
+				</div>
+			</div>
+			<div id="receptor1" class="tapete receptor"><span id="contador_receptor1" class="contador">0</span></div>
+			<div id="receptor2" class="tapete receptor"><span id="contador_receptor2" class="contador">0</span></div>
+			<div id="receptor3" class="tapete receptor"><span id="contador_receptor3" class="contador">0</span></div>
+			<div id="receptor4" class="tapete receptor"><span id="contador_receptor4" class="contador">0</span></div>
+		</div>
 
-			<!-- Botón de reset que reinicia todo: partida, contadores de tiempo, de movimientos, ... -->
-			<button id="reset" class="btn btn-danger">Reiniciar</button>
-		</div> <!-- class="central" -->
-    </body>
+		<!-- Botón de reset que reinicia todo: partida, contadores de tiempo, de movimientos, ... -->
+		<button id="reset" class="btn btn-danger">Reiniciar</button>
+	</div>
+</body>
 </html>
