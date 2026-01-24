@@ -22,6 +22,11 @@
 	position: absolute;
 	bottom: 0px;
 	right: 3px;
+	z-index: 100;
+	background-color: white;
+	padding: 2px 5px;
+	border-radius: 3px;
+	font-weight: bold;
 }
 
 /* Centrado del título y color */
@@ -32,52 +37,55 @@ h1#titulo {
 }
 
 /* Centrado de los marcadores de tiempo y movimientos */
-h2#marcadores{ 
-	text-align: center; 
+h2#marcadores {
+	text-align: center;
 }
 
 /* Mesa que contiene a los tapetes centrados */
-div#mesa{
+div#mesa {
 	text-align: center;
-	margin:20px;
+	margin: 20px;
 }
 
 /* Todos los tapetes con position relative para que
    los respectivos mazos (arrays de <img>) puedan
    posicionarse de manera absoluta respecto a ellos */
-div.tapete{
+div.tapete {
 	display: inline-block;
 	position: relative;
 	margin: 10px;
 }
 
 /* Dimensiones y color de fondo para el tapete inicial */
-div.tapete#inicial{
-	width: 340px;
-	height: 340px;			
+div.tapete#inicial {
+	width: 380px;
+	height: 380px;
 	background-color: lightgrey;
 }
 
 /* Dimensiones para todos los tapetes salvo el inicial */
-div.tapete:not(#inicial){				
+div.tapete:not(#inicial) {
 	height: 125px;
 	width: 100px;
 }
 
-/* Color de fondo para el tapete de las cartas sobrantes */
-div.tapete#sobrantes{
-	background-color: lightblue;
+/*  tapete de las cartas sobrantes */
+div.tapete#sobrantes {
+	background-color: rgb(227, 72, 72);
+	width: 300px;
+	height: 300px;
 }
 
 /* Color de fondo de los tapetes receptores */
-div.tapete.receptor{
+div.tapete.receptor {
 	background-color: lightgreen;
 }
 
-.mazoInicial{
+.mazoInicial {
 	width: 40%;
 }
-.menuPrincipal{
+
+.menuPrincipal {
 	top: 0%;
 	width: 100vw;
 	height: 100vh;
@@ -88,7 +96,8 @@ div.tapete.receptor{
 	align-items: center;
 	z-index: 10;
 }
-.menuSecundario{
+
+.menuSecundario {
 	height: 60%;
 	width: 30%;
 	background-color: white;
@@ -99,7 +108,8 @@ div.tapete.receptor{
 	justify-content: center;
 	align-items: center;
 }
-.menuContenedor{
+
+.menuContenedor {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -107,13 +117,15 @@ div.tapete.receptor{
 	gap: 3vh;
 	text-align: center;
 }
- #LogoMenu{
+
+#LogoMenu {
 	width: 10vw;
 	position: absolute;
 	top: 20%;
 	left: 35%;
- }
-#iniciar{
+}
+
+#iniciar {
 	border: none;
 	height: 6vh;
 	width: 12vw;
@@ -121,17 +133,27 @@ div.tapete.receptor{
 	color: white;
 	background-color: green;
 }
-.inputsMenu{
+
+.inputsMenu {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	align-items: center;	
+	align-items: center;
 }
-.textoMS{
+
+.textoMS {
 	display: flex;
-	justify-content: space-between;	
+	justify-content: space-between;
 	width: 100%;
 }
-#logoVIU{
+
+#logoVIU {
 	width: 10vw;
+}
+
+#reset {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	z-index: 1000;
 }

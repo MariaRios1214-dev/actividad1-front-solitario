@@ -48,8 +48,8 @@ let segundos = 0;    // cuenta de segundos
 let temporizador = null; // manejador del temporizador
 
 /***** FIN DECLARACIÓN DE VARIABLES GLOBALES *****/
+
 function validarRango(valorInicial, valorFinal) {
-	console.log("Validando rango:", valorInicial, valorFinal);
 	return valorInicial <= valorFinal;
 }
 
@@ -79,7 +79,6 @@ function generarCombinaciones(numerosCartas, palos) {
 		for (const palo of palosAlternados) {
 			const infoPalo = PALOS[palo];
 			const claveCarta = `${numero}-${palo}-${infoPalo.corto}`;
-			console.log("Generando combinación:", claveCarta);
 			combinaciones.set(claveCarta, infoPalo.color);
 		}
 	}
@@ -97,7 +96,6 @@ function barajarMazo(mazo) {
 		const j = Math.floor(Math.random() * (i + 1));
 		mazoBarajado.push(copiaMazo[j]);
 		copiaMazo.splice(j, 1);
-		console.log("copiaMazo.length", copiaMazo.length, j, i)
 	}
 	return mazoBarajado;
 }
@@ -113,12 +111,12 @@ function configurarReceptores() {
 		tapeteReceptor.addEventListener('drop', (e) => {
 			e.preventDefault(); // Permite dejarlo caer sobre un lugar válido
 			const cartaId = e.dataTransfer.getData('cartaId');
-			console.log("Drop en receptor ", index, " de carta:", cartaId);
 			const cartaImg = document.querySelector(`img[src="imagenes/baraja/${cartaId}.png"]`);
 
 			if (cartaImg) {
-				console.log("Intentando enviar carta al receptor ", index);
-				intentarEnviarAReceptor(cartaImg, tapeteReceptor, contadores[index], contInicial);
+				// Determinar el contador de origen según de dónde viene la carta
+				const contOrigen = cartaImg.dataset.origen === 'sobrantes' ? contSobrantes : contInicial;
+				intentarEnviarAReceptor(cartaImg, tapeteReceptor, contadores[index], contOrigen);
 			}
 		})
 	})
@@ -143,7 +141,6 @@ function comenzarJuego() {
 
 	mazoInicial = [...combinaciones];
 	const cartasBarajadas = barajarMazo(mazoInicial);
-	console.log("Cartas barajadas:", cartasBarajadas);
 	document.getElementById("mP").style.display = "none";
 	cargarTapeteInicial(cartasBarajadas);
 
@@ -251,9 +248,14 @@ document.getElementById("iniciar").addEventListener("click", comenzarJuego);
 	Al final se debe ajustar el contador de cartas a la cantidad oportuna
 */
 function cargarTapeteInicial(mazo) {
-	console.log("Cargando tapete inicial con mazo de tamaño ", mazo.length, mazo);
+	// Guardar el contador antes de limpiar
+	const contador = tapeteInicial.querySelector('.contador');
 	// Limpiar el tapete antes
 	tapeteInicial.innerHTML = '';
+	// Restaurar el contador
+	if (contador) {
+		tapeteInicial.appendChild(contador);
+	}
 
 	// Recorrer todas las cartas del mazo
 	mazo.forEach((carta, indice) => {
@@ -265,19 +267,18 @@ function cargarTapeteInicial(mazo) {
 		img.dataset.palo = palo;
 		img.dataset.color = (colorCorto === "r") ? "rojo" : "negro";
 		img.draggable = true;
-		img.style.width = '100px';
+		img.style.height = '100px';
+		img.style.width = '75px';
 		img.style.position = 'absolute';
 		img.style.top = (indice * paso) + 'px';
 		img.style.left = (indice * paso) + 'px';
 		img.dataset.indice = indice;
+		img.dataset.origen = 'inicial'; // Marcar que viene del tapete inicial
 
 		// Evento dragstart: inicia el arrastre de la carta
 		img.addEventListener('dragstart', (e) => {
-			console.log("Drag start de carta:", e.target);
-			console.log("Iniciando drag de carta:", carta[0]);
 			e.dataTransfer.setData('cartaId', carta[0]);
 			e.dataTransfer.effectAllowed = 'move'; //Indica que la carta se mueve, no se copia
-			console.log("Arrastrando carta:", carta[0]);
 			img.style.opacity = '0.5';
 		});
 		// Evento dragend: finaliza el arrastre de la carta y cambia la opacidad de nuevo
@@ -321,7 +322,6 @@ function setContador(contador, valor) {
 
 function cartaSuperior(tapete) {
 	const cartas = tapete.querySelectorAll("img");
-	console.log("cartas en tapete:", cartas, cartas.length);
 	return cartas.length ? cartas[cartas.length - 1] : null;
 } // Busca todas las cartas dentro del receptor y devuelve la ultima y si encuentra que está vacío devuelve un null
 
@@ -336,7 +336,6 @@ function colorDe(cartaImg) {
 function puedeColocarEnReceptor(cartaImg, tapeteReceptor) {
 	const top = cartaSuperior(tapeteReceptor);
 	const num = numeroDe(cartaImg);
-	console.log("Validando colocación de carta", cartaImg.dataset.numero, "en receptor con cima", top ? top.dataset.numero : "vacío");
 	if (!top) return num === 12; //Si el receptor está vacío, solo se permite el 12
 
 	//Si hay carta arriba: debe ser decreciente y alternar color
@@ -345,8 +344,6 @@ function puedeColocarEnReceptor(cartaImg, tapeteReceptor) {
 
 	const esDecreciente = num === topNum - 1;
 	const alternaColor = colorDe(cartaImg) !== topColor;
-
-	console.log("esDecreciente:", esDecreciente, "alternaColor:", alternaColor, "topColor:", topColor);
 
 	return esDecreciente && alternaColor;
 } //Función de validación del receptor
@@ -359,28 +356,86 @@ function depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen)
 	const n = tapeteReceptor.querySelectorAll("img").length - 1; // index de la carta recién puesta
 	cartaImg.style.position = "absolute";
 	cartaImg.style.top = (n * paso) + "px";
-	cartaImg.style.left = (n * paso) + "px";
+	cartaImg.style.left = "0px";
 
 	// Contadores
 	incContador(contReceptor);       // suma 1 en el receptor
 	incContador(contMovimientos);    // suma 1 movimiento
-	if (contOrigen) decContador(contOrigen); // resta 1 del origen (inicial o sobrantes)
+	decContador(contOrigen); // resta 1 del origen (inicial o sobrantes)
+	
+	// Verificar si necesitamos recargar el mazo inicial después de mover al receptor
+	verificarRecargaMazoInicial();
 } //Funcion para depositor en un mazo receptor
 
 function moverASobrantes(cartaImg) {
 	const cartaId = cartaImg.src.split('/').pop().replace('.png', '');
 	mazoSobrantes.push([cartaId, cartaImg.dataset.color]);
-	console.log("Mazo sobrantes tras añadir carta:", mazoSobrantes);
+	
+	// Decrementar el contador de origen antes de mover
+	if (cartaImg.dataset.origen === 'inicial') {
+		decContador(contInicial);
+	}
+	
 	// Se agrega la carta al tapete de sobrantes en el DOM
 	tapeteSobrantes.appendChild(cartaImg);
+	cartaImg.dataset.origen = 'sobrantes'; // Marcar que ahora está en sobrantes
 
 	const indice = tapeteSobrantes.querySelectorAll('img').length - 1;
-	console.log("Moviendo carta a sobrantes, nuevo índice:", indice);
-	console.log("movimiento en px:", "-- indice", indice, "---calculo de ubicacion", indice * paso);
 	cartaImg.style.top = (indice * paso) + 'px';
 	cartaImg.style.left = (indice * paso) + 'px';
 
 	incContador(contSobrantes);
+	
+	// Verificar si necesitamos recargar el mazo inicial
+	verificarRecargaMazoInicial();
+}
+
+function verificarRecargaMazoInicial() {
+	console.log("Texto del contador inicial:", contInicial.textContent);
+	console.log("Texto del contador sobrantes:", contSobrantes.textContent);
+	
+	const valueContInicial = parseInt(contInicial.textContent, 10);
+	const valueContSobrantes = parseInt(contSobrantes.textContent, 10);
+	
+	console.log("Valor parseado del contador inicial:", valueContInicial);
+	console.log("Valor parseado del contador sobrantes:", valueContSobrantes);
+	console.log("Cartas reales en tapete inicial:", tapeteInicial.querySelectorAll("img").length);
+	console.log("Cartas reales en tapete sobrantes:", tapeteSobrantes.querySelectorAll("img").length);
+	console.log("Condición se cumple (inicial==0 && sobrantes>0):", valueContInicial == 0 && valueContSobrantes > 0);
+
+	if(valueContInicial == 0 && valueContSobrantes > 0){
+		console.log(" SE EJECUTA LA RECARGA");
+		// Si el mazo inicial está vacío y hay cartas en sobrantes, mover todas las cartas de sobrantes al inicial
+		const cartasSobrantes = tapeteSobrantes.querySelectorAll("img");
+		
+		// Guardar el contador de sobrantes antes de limpiar
+		const contadorSobrantes = tapeteSobrantes.querySelector('.contador');
+		const contadorInicial = tapeteInicial.querySelector('.contador');
+		
+		cartasSobrantes.forEach(carta => {
+			// Mover en el DOM
+			tapeteInicial.appendChild(carta);
+			// Cambiar el origen de vuelta a inicial
+			carta.dataset.origen = 'inicial';
+			// Ajustar posición para que quede apilada
+			const n = tapeteInicial.querySelectorAll("img").length - 1; // index de la carta recién puesta
+			carta.style.position = "absolute";
+			carta.style.top = (n * paso) + "px";
+			carta.style.left = (n * paso) + "px";
+		});
+		
+		// Limpiar el tapete de sobrantes pero preservar el contador
+		tapeteSobrantes.innerHTML = '';
+		if (contadorSobrantes) {
+			tapeteSobrantes.appendChild(contadorSobrantes);
+		}
+		
+		// Actualizar contadores
+		setContador(contInicial, cartasSobrantes.length);
+		setContador(contSobrantes, 0);
+	} else {
+		console.log(" NO SE EJECUTA LA RECARGA (condición no cumplida)");
+	}
 }
 
 function intentarEnviarAReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen) {
