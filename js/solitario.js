@@ -310,6 +310,7 @@ document.getElementById("reset").addEventListener("click", () => {
 	pararTiempo();
 	reiniciarTiempo();
 	reiniciarContadores();
+	juegoTerminado = false;
 	// Mostrar el menú principal nuevamente
 	document.getElementById("mP").style.display = "flex";
 	document.getElementById("fin").style.display = "none";
@@ -567,9 +568,11 @@ function verificarVictoria() {
 	tapeteSobrantes.querySelectorAll("img").forEach(img => img.draggable = false);
 
 	// Si existe el panel #fin (de tus compañeros), úsalo
+	document.getElementById("reset").style.zIndex = "999999"
 	const fin = document.getElementById("fin");
 	if (fin) {
 		fin.style.display = "flex";
+		fin.style.zIndex = "101";
 
 		const tiempo = document.getElementById("contador_tiempo").textContent;
 		const movimientos = document.getElementById("contador_movimientos").textContent;
@@ -584,6 +587,7 @@ function verificarVictoria() {
 
 		return;
 	}
+	
 
 	// Si NO existe #fin, usa tu overlay (fallback)
 	mostrarMensajeFin(motivo);
@@ -600,7 +604,7 @@ function mostrarMensajeFin(motivo) {
 		overlay.style.display = "flex";
 		overlay.style.alignItems = "center";
 		overlay.style.justifyContent = "center";
-		overlay.style.zIndex = "9999";
+		overlay.style.zIndex = "101";
 
 		overlay.innerHTML = `
 		<div style="background:white; padding:24px; border-radius:12px; width:min(420px,90%); text-align:center;">
