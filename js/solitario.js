@@ -47,7 +47,7 @@ let contTiempo = document.getElementById("contador_tiempo"); // span cuenta tiem
 let segundos = 0;    // cuenta de segundos
 let temporizador = null; // manejador del temporizador
 
-const MAX_SEGUNDOS = 10;  // 10 minutos
+const MAX_SEGUNDOS = 10*60;  // 10 minutos
 const MAX_MOVIMIENTOS = 200;  //Movimientops
 let juegoTerminado = false;
 
@@ -312,6 +312,8 @@ document.getElementById("reset").addEventListener("click", () => {
 	reiniciarContadores();
 	// Mostrar el menú principal nuevamente
 	document.getElementById("mP").style.display = "flex";
+	document.getElementById("fin").style.display = "none";
+
 });
 /**
 	  En el elemento HTML que representa el tapete inicial (variable tapeteInicial)
@@ -506,6 +508,7 @@ function intentarEnviarAReceptor(cartaImg, tapeteReceptor, contReceptor, contOri
 
 	if (puedeColocarEnReceptor(cartaImg, tapeteReceptor)) {
 		depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen);
+		verificarVictoria(); // Verificar si ganó después de cada movimiento
 		return true;
 	}
 
@@ -516,28 +519,73 @@ function intentarEnviarAReceptor(cartaImg, tapeteReceptor, contReceptor, contOri
   // Une la validación mas el deposito de las cartas
 
 
-function actualizarDraggables() {
-  // Tapete inicial: solo la carta superior es draggable
-  tapeteInicial.querySelectorAll("img").forEach(img => img.draggable = false);
-  const topInicial = cartaSuperior(tapeteInicial);
-  if (topInicial) topInicial.draggable = true;
 
-  // Tapete sobrantes: solo la carta superior es draggable
-  tapeteSobrantes.querySelectorAll("img").forEach(img => img.draggable = false);
-  const topSobrantes = cartaSuperior(tapeteSobrantes);
-  if (topSobrantes) topSobrantes.draggable = true;
+function actualizarDraggables() {
+	// Tapete inicial: solo la carta superior es draggable
+	tapeteInicial.querySelectorAll("img").forEach(img => img.draggable = false);
+	const topInicial = cartaSuperior(tapeteInicial);
+	if (topInicial) topInicial.draggable = true;
+
+	// Tapete sobrantes: solo la carta superior es draggable
+	tapeteSobrantes.querySelectorAll("img").forEach(img => img.draggable = false);
+	const topSobrantes = cartaSuperior(tapeteSobrantes);
+	if (topSobrantes) topSobrantes.draggable = true;
 }
 
+/**
+ * Verifica si el jugador ha ganado.
+ * Gana cuando el total de cartas en los 4 receptores coincide
+ * con el número de cartas totales del juego.
+ */
+function verificarVictoria() {
+	const cont1 = parseInt(contReceptor1.textContent, 10) || 0;
+	const cont2 = parseInt(contReceptor2.textContent, 10) || 0;
+	const cont3 = parseInt(contReceptor3.textContent, 10) || 0;
+	const cont4 = parseInt(contReceptor4.textContent, 10) || 0;
 
-function terminarJuego(motivo) {
-	if (juegoTerminado) return; // evita doble ejecución
+	const totalCartas = cont1 + cont2 + cont3 + cont4;
+
+	const nums = crearRangoNumeros(
+		parseInt(document.getElementById("valorInicial").value),
+		parseInt(document.getElementById("valorFinal").value)
+	);
+	const cartasEsperadas = nums.length * palos.length;
+
+	if (totalCartas === cartasEsperadas) {
+		terminarJuego("¡Ganaste! Completaste todos los receptores.");
+	}
+	}
+
+	function terminarJuego(motivo) {
+	if (juegoTerminado) return;
 	juegoTerminado = true;
 
 	pararTiempo();
-	actualizarDraggables(); // opcional, deja todo no-draggable si quieres
+
+	// Bloquear drag & drop
 	tapeteInicial.querySelectorAll("img").forEach(img => img.draggable = false);
 	tapeteSobrantes.querySelectorAll("img").forEach(img => img.draggable = false);
 
+	// Si existe el panel #fin (de tus compañeros), úsalo
+	const fin = document.getElementById("fin");
+	if (fin) {
+		fin.style.display = "flex";
+
+		const tiempo = document.getElementById("contador_tiempo").textContent;
+		const movimientos = document.getElementById("contador_movimientos").textContent;
+
+		const tFinal = document.getElementById("tiempoFinal");
+		const mFinal = document.getElementById("movimientosFinal");
+		const motivoEl = document.getElementById("motivoFinal");
+
+		if (tFinal) tFinal.textContent = tiempo;
+		if (mFinal) mFinal.textContent = movimientos;
+		if (motivoEl) motivoEl.textContent = motivo;
+
+		return;
+	}
+
+	// Si NO existe #fin, usa tu overlay (fallback)
 	mostrarMensajeFin(motivo);
 }
 
@@ -566,14 +614,15 @@ function mostrarMensajeFin(motivo) {
 		document.body.appendChild(overlay);
 
 		document.getElementById("btn_volver_menu").addEventListener("click", () => {
-		// volver al menú y dejar listo para empezar otra vez
 		overlay.remove();
 		reiniciarTiempo();
 		reiniciarContadores();
 		document.getElementById("mP").style.display = "flex";
-		juegoTerminado = false; // permite nueva partida
+		juegoTerminado = false;
 		});
 	}
 
 	document.getElementById("fin_texto").textContent = motivo;
 }
+
+
