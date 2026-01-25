@@ -8,6 +8,7 @@ let palos = ["viu", "cua", "hex", "cir"];
 
 // paso (top y left) en pixeles de una carta a la siguiente en un mazo
 let paso = 5;
+let pasoReceptor = 12; // paso en receptores
 
 // Mapa de combinaciones (número-palo-color)
 const PALOS = {
@@ -421,7 +422,7 @@ function depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen)
 
 	const n = tapeteReceptor.querySelectorAll("img").length - 1;
 	cartaImg.style.position = "absolute";
-	cartaImg.style.top = (n * paso) + "px";
+	cartaImg.style.top = (n * pasoReceptor) + "px";
 	cartaImg.style.left = "0px";
 
 	// contadores
