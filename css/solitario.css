@@ -11,8 +11,8 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	min-height: 100px;
-	padding: 20px 0;
+	min-height: 60px;
+	padding: 10px 0;
 }
 
 /* Todos los contadores estarán ubicados en la parte inferior 
@@ -52,7 +52,7 @@ h2#marcadores {
 /* Mesa que contiene a los tapetes centrados */
 div#mesa {
 	text-align: center;
-	margin: 20px;
+	margin: 10px;
 }
 
 /* Todos los tapetes con position relative para que
@@ -61,13 +61,13 @@ div#mesa {
 div.tapete {
 	display: inline-block;
 	position: relative;
-	margin: 10px;
+	margin: 5px;
 }
 
 /* Dimensiones y color de fondo para el tapete inicial */
 div.tapete#inicial {
-	width: 380px;
-	height: 380px;
+	width: 340px;
+	height: 340px;
 	background-color: lightgrey;
 }
 .tapete {
@@ -83,8 +83,8 @@ div.tapete:not(#inicial) {
 /*  tapete de las cartas sobrantes */
 div.tapete#sobrantes {
 	background-color: rgb(227, 72, 72);
-	width: 330px;
-	height: 350px;
+	width: 280px;
+	height: 280px;
 }
 
 .pantalla-fin{
@@ -111,7 +111,31 @@ div.tapete.receptor {
 	width: 40%;
 }
 .tapetes_superiores {
-	height: 500px;
+	height: 380px;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	gap: 15px;
+}
+
+.tapetes-receptores {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	gap: 10px;
+	margin-top: 10px;
+}
+
+.tapete-contenedor {
+	display: inline-block;
+	text-align: center;
+}
+
+.titulo-tapete {
+	margin: 0 0 5px 0;
+	font-weight: bold;
+	color: #E65014;
+	font-size: 0.9rem;
 }
 .menuPrincipal {
 	top: 0%;
