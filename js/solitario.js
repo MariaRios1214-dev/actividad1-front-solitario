@@ -47,6 +47,10 @@ let contTiempo = document.getElementById("contador_tiempo"); // span cuenta tiem
 let segundos = 0;    // cuenta de segundos
 let temporizador = null; // manejador del temporizador
 
+const MAX_SEGUNDOS = 10;  // 10 minutos
+const MAX_MOVIMIENTOS = 200;  //Movimientops
+let juegoTerminado = false;
+
 /***** FIN DECLARACIÓN DE VARIABLES GLOBALES *****/
 
 function validarRango(valorInicial, valorFinal) {
@@ -101,26 +105,60 @@ function barajarMazo(mazo) {
 }
 
 function configurarEventosDragDrop() {
+
+	// --- 1) RECEPTORES ---
 	[tapeteReceptor1, tapeteReceptor2, tapeteReceptor3, tapeteReceptor4].forEach((tapeteReceptor, index) => {
 		const contadores = [contReceptor1, contReceptor2, contReceptor3, contReceptor4];
 
-		tapeteReceptor.addEventListener('dragover', (e) => {
-			e.preventDefault(); // Permite  que el elemento pueda soltarse encima del destino
-			e.dataTransfer.dropEffect = 'move'; // Indica que el tipo de movimiento es un movimiento
-		})
-		tapeteReceptor.addEventListener('drop', (e) => {
-			e.preventDefault(); // Permite dejarlo caer sobre un lugar válido
-			const cartaId = e.dataTransfer.getData('cartaId');
-			const cartaImg = document.querySelector(`img[src="imagenes/baraja/${cartaId}.png"]`);
+		tapeteReceptor.addEventListener("dragover", (e) => {
+		e.preventDefault();
+		e.dataTransfer.dropEffect = "move";
+		});
 
-			if (cartaImg) {
-				// Determinar el contador de origen según de dónde viene la carta
-				const contOrigen = cartaImg.dataset.origen === 'sobrantes' ? contSobrantes : contInicial;
-				intentarEnviarAReceptor(cartaImg, tapeteReceptor, contadores[index], contOrigen);
-			}
-		})
-	})
-};
+		tapeteReceptor.addEventListener("drop", (e) => {
+		e.preventDefault();
+		const cartaId = e.dataTransfer.getData("cartaId");
+		const cartaImg = document.querySelector(`img[src="imagenes/baraja/${cartaId}.png"]`);
+		if (!cartaImg) return;
+
+const origen = cartaImg.dataset.origen;
+
+		// 1) Solo permitir arrastrar la carta superior del origen
+		const top = (origen === "sobrantes")
+		? cartaSuperior(tapeteSobrantes)
+		: cartaSuperior(tapeteInicial);
+
+		if (cartaImg !== top) {
+		return; // NO cuenta movimiento, NO hace nada
+		}
+
+		// 2)  ya es un intento válido
+		const contOrigen = (origen === "sobrantes") ? contSobrantes : contInicial;
+		intentarEnviarAReceptor(cartaImg, tapeteReceptor, contadores[index], contOrigen);
+
+		});
+	});
+
+	// --- 2) SOBRANTES (fuera del forEach!) ---
+	tapeteSobrantes.addEventListener("dragover", (e) => {
+		e.preventDefault();
+		e.dataTransfer.dropEffect = "move";
+	});
+
+	tapeteSobrantes.addEventListener("drop", (e) => {
+		e.preventDefault();
+		const cartaId = e.dataTransfer.getData("cartaId");
+		const cartaImg = document.querySelector(`img[src="imagenes/baraja/${cartaId}.png"]`);
+		if (!cartaImg) return;
+
+		// Solo permitir mover a sobrantes la carta superior del tapete inicial
+		const topInicial = cartaSuperior(tapeteInicial);
+		if (cartaImg !== topInicial) return;
+
+		moverASobrantes(cartaImg);
+	});
+}
+
 
 function reiniciarContadores() {
 	
@@ -238,6 +276,10 @@ function arrancarTiempo() {
 			+ ":" + ((min < 10) ? "0" + min : "" + min)
 			+ ":" + ((seg < 10) ? "0" + seg : "" + seg);
 		setContador(contTiempo, tiempo);
+		if (segundos >= MAX_SEGUNDOS) {
+			terminarJuego("Se alcanzó el límite de tiempo (10 minutos).");
+			return;
+			}
 		segundos++;
 	}
 	segundos = 0;
@@ -313,6 +355,8 @@ function cargarTapeteInicial(mazo) {
 	});
 
 	setContador(contInicial, mazo.length);
+	actualizarDraggables();
+
 } // cargarTapeteInicial
 
 
@@ -371,46 +415,45 @@ function puedeColocarEnReceptor(cartaImg, tapeteReceptor) {
 } //Función de validación del receptor
 
 function depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen) {
-	// Mover en el DOM
 	tapeteReceptor.appendChild(cartaImg);
 
-	// Ajustar posición para que quede apilada
-	const n = tapeteReceptor.querySelectorAll("img").length - 1; // index de la carta recién puesta
+	const n = tapeteReceptor.querySelectorAll("img").length - 1;
 	cartaImg.style.position = "absolute";
 	cartaImg.style.top = (n * paso) + "px";
 	cartaImg.style.left = "0px";
 
-	// Contadores
-	incContador(contReceptor);       // suma 1 en el receptor
-	incContador(contMovimientos);    // suma 1 movimiento
-	decContador(contOrigen); // resta 1 del origen (inicial o sobrantes)
+	// contadores
+	incContador(contReceptor);
+	decContador(contOrigen);
 
-	// Verificar si necesitamos recargar el mazo inicial después de mover al receptor
 	verificarRecargaMazoInicial();
-} //Funcion para depositor en un mazo receptor
+	actualizarDraggables();
+}
+ //Funcion para depositor en un mazo receptor
 
 function moverASobrantes(cartaImg) {
-	const cartaId = cartaImg.src.split('/').pop().replace('.png', '');
-	mazoSobrantes.push([cartaId, cartaImg.dataset.color]);
 
-	// Decrementar el contador de origen antes de mover
-	if (cartaImg.dataset.origen === 'inicial') {
+	// Si la carta venía de sobrantes y la vuelves a colocar, primero resta 1 a sobrantes
+	if (cartaImg.dataset.origen === "sobrantes") {
+		decContador(contSobrantes);
+	} else {
 		decContador(contInicial);
 	}
 
-	// Se agrega la carta al tapete de sobrantes en el DOM
 	tapeteSobrantes.appendChild(cartaImg);
-	cartaImg.dataset.origen = 'sobrantes'; // Marcar que ahora está en sobrantes
+	cartaImg.dataset.origen = "sobrantes";
 
-	const indice = tapeteSobrantes.querySelectorAll('img').length - 1;
-	cartaImg.style.top = (indice * paso) + 'px';
-	cartaImg.style.left = (indice * paso) + 'px';
+	const indice = tapeteSobrantes.querySelectorAll("img").length - 1;
+	cartaImg.style.position = "absolute";
+	cartaImg.style.top = (indice * paso) + "px";
+	cartaImg.style.left = (indice * paso) + "px";
 
 	incContador(contSobrantes);
 
-	// Verificar si necesitamos recargar el mazo inicial
 	verificarRecargaMazoInicial();
+	actualizarDraggables();
 }
+
 
 function verificarRecargaMazoInicial() {
 	const valueContInicial = parseInt(contInicial.textContent, 10);
@@ -443,18 +486,94 @@ function verificarRecargaMazoInicial() {
 		}
 
 		// Actualizar contadores
-		setContador(contInicial, cartasSobrantes.length);
-		setContador(contSobrantes, 0);
+	setContador(contInicial, cartasSobrantes.length);
+	setContador(contSobrantes, 0);
+	actualizarDraggables();
+
+
 	}
 }
 
 function intentarEnviarAReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen) {
+	incContador(contMovimientos);
+
+	const movs = parseInt(contMovimientos.textContent, 10) || 0;
+	if (movs >= MAX_MOVIMIENTOS) {
+	terminarJuego("Se alcanzó el límite de movimientos (200).");
+	return false;
+	}
+
+
 	if (puedeColocarEnReceptor(cartaImg, tapeteReceptor)) {
 		depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen);
 		return true;
 	}
+
 	moverASobrantes(cartaImg);
 	return false;
-}  // Une la validación mas el deposito de las cartas
+}
+
+  // Une la validación mas el deposito de las cartas
 
 
+function actualizarDraggables() {
+  // Tapete inicial: solo la carta superior es draggable
+  tapeteInicial.querySelectorAll("img").forEach(img => img.draggable = false);
+  const topInicial = cartaSuperior(tapeteInicial);
+  if (topInicial) topInicial.draggable = true;
+
+  // Tapete sobrantes: solo la carta superior es draggable
+  tapeteSobrantes.querySelectorAll("img").forEach(img => img.draggable = false);
+  const topSobrantes = cartaSuperior(tapeteSobrantes);
+  if (topSobrantes) topSobrantes.draggable = true;
+}
+
+
+function terminarJuego(motivo) {
+	if (juegoTerminado) return; // evita doble ejecución
+	juegoTerminado = true;
+
+	pararTiempo();
+	actualizarDraggables(); // opcional, deja todo no-draggable si quieres
+	tapeteInicial.querySelectorAll("img").forEach(img => img.draggable = false);
+	tapeteSobrantes.querySelectorAll("img").forEach(img => img.draggable = false);
+
+	mostrarMensajeFin(motivo);
+}
+
+function mostrarMensajeFin(motivo) {
+	let overlay = document.getElementById("overlay_fin");
+	if (!overlay) {
+		overlay = document.createElement("div");
+		overlay.id = "overlay_fin";
+		overlay.style.position = "fixed";
+		overlay.style.inset = "0";
+		overlay.style.background = "rgba(0,0,0,0.65)";
+		overlay.style.display = "flex";
+		overlay.style.alignItems = "center";
+		overlay.style.justifyContent = "center";
+		overlay.style.zIndex = "9999";
+
+		overlay.innerHTML = `
+		<div style="background:white; padding:24px; border-radius:12px; width:min(420px,90%); text-align:center;">
+			<h3 style="margin:0 0 12px;">Juego finalizado</h3>
+			<p id="fin_texto" style="margin:0 0 18px;"></p>
+			<button id="btn_volver_menu" style="padding:10px 16px; border:none; border-radius:8px; background:#E65014; color:white; cursor:pointer;">
+			Volver al menú
+			</button>
+		</div>
+		`;
+		document.body.appendChild(overlay);
+
+		document.getElementById("btn_volver_menu").addEventListener("click", () => {
+		// volver al menú y dejar listo para empezar otra vez
+		overlay.remove();
+		reiniciarTiempo();
+		reiniciarContadores();
+		document.getElementById("mP").style.display = "flex";
+		juegoTerminado = false; // permite nueva partida
+		});
+	}
+
+	document.getElementById("fin_texto").textContent = motivo;
+}
