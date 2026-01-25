@@ -270,6 +270,8 @@ document.getElementById("reset").addEventListener("click", () => {
 	reiniciarContadores();
 	// Mostrar el menú principal nuevamente
 	document.getElementById("mP").style.display = "flex";
+	document.getElementById("fin").style.display = "none";
+
 });
 /**
 	  En el elemento HTML que representa el tapete inicial (variable tapeteInicial)
@@ -489,6 +491,9 @@ function mostrarVictoria() {
 	// varibales para mostrar en el mensaje final
 	const tiempo = document.getElementById("contador_tiempo").textContent;
 	const movimientos = document.getElementById("contador_movimientos").textContent;
+	const reinico = document.getElementById("reset");
+
+	reinico.style.zIndex = "104"; // para que el boton reset quede encima del mensaje final
 	
 	// mostrar el mensahe final
 	const mensajeFinal = document.getElementById("fin");	
@@ -496,7 +501,6 @@ function mostrarVictoria() {
 
 	document.getElementById("tiempoFinal").textContent = tiempo;
 	document.getElementById("movimientosFinal").textContent = movimientos;
-
 }
 
 
