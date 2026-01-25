@@ -451,10 +451,52 @@ function verificarRecargaMazoInicial() {
 function intentarEnviarAReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen) {
 	if (puedeColocarEnReceptor(cartaImg, tapeteReceptor)) {
 		depositarEnReceptor(cartaImg, tapeteReceptor, contReceptor, contOrigen);
+		verificarVictoria(); // Verificar si ganó después de cada movimiento
 		return true;
 	}
 	moverASobrantes(cartaImg);
 	return false;
 }  // Une la validación mas el deposito de las cartas
+
+
+/**
+	Verifica si el jugador ha ganado. La condición de victoria es que todos
+	los receptores tengan cartas (el mazo inicial y sobrantes estén vacíos)
+*/
+function verificarVictoria() {
+	const cont1 = parseInt(contReceptor1.textContent, 10);
+	const cont2 = parseInt(contReceptor2.textContent, 10);
+	const cont3 = parseInt(contReceptor3.textContent, 10);
+	const cont4 = parseInt(contReceptor4.textContent, 10);
+	
+	// La victoria ocurre cuando todos los receptores tienen cartas
+	// El total debe ser igual al número total de cartas del juego
+	const totalCartas = cont1 + cont2 + cont3 + cont4;
+	const numeros = crearRangoNumeros(
+		parseInt(document.getElementById("valorInicial").value),
+		parseInt(document.getElementById("valorFinal").value)
+	);
+	const cartasEsperadas = numeros.length * palos.length;
+	
+	if (totalCartas === cartasEsperadas) {
+		mostrarVictoria();
+	}
+}
+
+function mostrarVictoria() {
+	pararTiempo();
+	
+	// varibales para mostrar en el mensaje final
+	const tiempo = document.getElementById("contador_tiempo").textContent;
+	const movimientos = document.getElementById("contador_movimientos").textContent;
+	
+	// mostrar el mensahe final
+	const mensajeFinal = document.getElementById("fin");	
+	mensajeFinal.style.display = "flex";
+
+	document.getElementById("tiempoFinal").textContent = tiempo;
+	document.getElementById("movimientosFinal").textContent = movimientos;
+
+}
 
 
